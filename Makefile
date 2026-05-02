@@ -1,8 +1,8 @@
 # Variables
 CXX = g++
-CXXFLAGS = -std=c++17 -I./include -I./external/stb
+CXXFLAGS = -std=c++17 -I./include -I./external/stb -fopenmp -O3
 TARGET = bin/cnn_app.exe
-SRCS = src/main.cpp src/image.cpp src/convolution.cpp src/buffer.cpp
+SRCS = $(wildcard src/*.cpp)
 
 all: create_bin $(TARGET)
 	@echo ---------------------------------------

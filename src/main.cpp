@@ -1,5 +1,8 @@
 #include "includes.h"
 
+#include <omp.h>
+#include <iostream>
+
 int main()
 {
     Image image("C:\\Users\\Moritz\\Documents\\GitHub\\CNN\\resources\\MJ_tiles_circles_bamboo_480x480.png");

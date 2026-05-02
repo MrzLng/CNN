@@ -1,7 +1,9 @@
 #include <algorithm>
 #include <iostream>
+#include <omp.h>
 
 #include "buffer.h"
+#include "timer.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
@@ -10,6 +12,7 @@ Buffer::Buffer(int width, int height, int channels):width(width), height(height)
 
 Buffer::Buffer(const Image& image):width(image.getWidth()), height(image.getHeight()), channels(3), data(image.getWidth()*image.getHeight()*3), size(image.getWidth()*image.getHeight()*3)
 {
+    #pragma omp parallel for collapse(2) schedule(dynamic)
     for (int y=0; y<height; y++)
     {
         for (int x=0; x<width; x++)
@@ -23,13 +26,13 @@ Buffer::Buffer(const Image& image):width(image.getWidth()), height(image.getHeig
 
 Buffer Buffer::padding(Padding_Type paddingType, int pad) const
 {
+    Timer timer("Padding");
     Buffer result(width+2*pad, height+2*pad, channels);
-
-    int y=0;
     switch(paddingType)
     {
         case Padding_Type::ZERO_PADDING:
         fill(result.getVector(), result.getVector()+result.getSize(), 0);
+        #pragma omp parallel for collapse(2) schedule(dynamic)
         for (int y=pad; y<height+pad; y++)
         {
             for (int x=pad; x<width+pad; x++)
@@ -41,66 +44,76 @@ Buffer Buffer::padding(Padding_Type paddingType, int pad) const
         }
         break;
         case Padding_Type::EXTEND_EDGE:
-        for (;y<pad;y++)
+        #pragma omp parallel for schedule(dynamic)
+        for (int y=0;y<pad;y++)
         { 
-            int x=0;
-            for (;x<pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=0;x<pad;x++)
             {
                 result.setData(getData(0, 0, 0), x, y, 0);
                 result.setData(getData(0, 0, 1), x, y, 1);
                 result.setData(getData(0, 0, 2), x, y, 2);
             }
-            for (;x<getWidth()+pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=pad;x<getWidth()+pad;x++)
             {
                 result.setData(getData(x-pad, 0, 0), x, y, 0);
                 result.setData(getData(x-pad, 0, 1), x, y, 1);
                 result.setData(getData(x-pad, 0, 2), x, y, 2);
             }
-            for (;x<getWidth()+2*pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=getWidth()+pad;x<getWidth()+2*pad;x++)
             {
                 result.setData(getData(getWidth()-1, 0, 0), x, y, 0);
                 result.setData(getData(getWidth()-1, 0, 1), x, y, 1);
                 result.setData(getData(getWidth()-1, 0, 2), x, y, 2);
             }
         }
-        for (;y<getHeight()+pad;y++)
+        #pragma omp parallel for schedule(dynamic)
+        for (int y=pad;y<getHeight()+pad;y++)
         {
             int x=0;
-            for (;x<pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=0;x<pad;x++)
             {
                 result.setData(getData(0, y-pad, 0), x, y, 0);
                 result.setData(getData(0, y-pad, 1), x, y, 1);
                 result.setData(getData(0, y-pad, 2), x, y, 2);
             }
-            for (;x<getWidth()+pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=pad;x<getWidth()+pad;x++)
             {
                 result.setData(getData(x-pad, y-pad, 0), x, y, 0);
                 result.setData(getData(x-pad, y-pad, 1), x, y, 1);
                 result.setData(getData(x-pad, y-pad, 2), x, y, 2);
             }
-            for (;x<getWidth()+2*pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=getWidth()+pad;x<getWidth()+2*pad;x++)
             {
                 result.setData(getData(getWidth()-1, y-pad, 0), x, y, 0);
                 result.setData(getData(getWidth()-1, y-pad, 1), x, y, 1);
                 result.setData(getData(getWidth()-1, y-pad, 2), x, y, 2);
             }
         }
-        for (;y<getHeight()+2*pad;y++)
+        #pragma omp parallel for schedule(dynamic)
+        for (int y=getHeight()+pad;y<getHeight()+2*pad;y++)
         {
-            int x=0;
-            for (;x<pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=0;x<pad;x++)
             {
                 result.setData(getData(0, getHeight()-1, 0), x, y, 0);
                 result.setData(getData(0, getHeight()-1, 1), x, y, 1);
                 result.setData(getData(0, getHeight()-1, 2), x, y, 2);
             }
-            for (;x<getWidth()+pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=pad;x<getWidth()+pad;x++)
             {
                 result.setData(getData(x-pad, getHeight()-1, 0), x, y, 0);
                 result.setData(getData(x-pad, getHeight()-1, 1), x, y, 1);
                 result.setData(getData(x-pad, getHeight()-1, 2), x, y, 2);
             }
-            for (;x<getWidth()+2*pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=getWidth()+pad;x<getWidth()+2*pad;x++)
             {
                 result.setData(getData(getWidth()-1, getHeight()-1, 0), x, y, 0);
                 result.setData(getData(getWidth()-1, getHeight()-1, 1), x, y, 1);
@@ -109,66 +122,75 @@ Buffer Buffer::padding(Padding_Type paddingType, int pad) const
         }
         break;
         case Padding_Type::REFLECTION:
-        for (;y<pad;y++)
+        #pragma omp parallel for schedule(dynamic)
+        for (int y=0;y<pad;y++)
         { 
-            int x=0;
-            for (;x<pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=0;x<pad;x++)
             {
                 result.setData(getData(pad-x-1,pad-y-1, 0), x, y, 0);
                 result.setData(getData(pad-x-1,pad-y-1, 1), x, y, 1);
                 result.setData(getData(pad-x-1,pad-y-1, 2), x, y, 2);
             }
-            for (;x<getWidth()+pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=pad;x<getWidth()+pad;x++)
             {
                 result.setData(getData(x-pad, pad-y-1, 0), x, y, 0);
                 result.setData(getData(x-pad, pad-y-1, 1), x, y, 1);
                 result.setData(getData(x-pad, pad-y-1, 2), x, y, 2);
             }
-            for (;x<getWidth()+2*pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=getWidth()+pad;x<getWidth()+2*pad;x++)
             {
                 result.setData(getData(getWidth()*2-x+pad-1, pad-y-1, 0), x, y, 0);
                 result.setData(getData(getWidth()*2-x+pad-1, pad-y-1, 1), x, y, 1);
                 result.setData(getData(getWidth()*2-x+pad-1, pad-y-1, 2), x, y, 2);
             }
         }
-        for (;y<getHeight()+pad;y++)
+        #pragma omp parallel for schedule(dynamic)
+        for (int y=pad;y<getHeight()+pad;y++)
         {
-            int x=0;
-            for (;x<pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=0;x<pad;x++)
             {
                 result.setData(getData(pad-x-1, y-pad, 0), x, y, 0);
                 result.setData(getData(pad-x-1, y-pad, 1), x, y, 1);
                 result.setData(getData(pad-x-1, y-pad, 2), x, y, 2);
             }
-            for (;x<getWidth()+pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=pad;x<getWidth()+pad;x++)
             {
                 result.setData(getData(x-pad, y-pad, 0), x, y, 0);
                 result.setData(getData(x-pad, y-pad, 1), x, y, 1);
                 result.setData(getData(x-pad, y-pad, 2), x, y, 2);
             }
-            for (;x<getWidth()+2*pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=getWidth()+pad;x<getWidth()+2*pad;x++)
             {
                 result.setData(getData(getWidth()*2-x+pad-1, y-pad, 0), x, y, 0);
                 result.setData(getData(getWidth()*2-x+pad-1, y-pad, 1), x, y, 1);
                 result.setData(getData(getWidth()*2-x+pad-1, y-pad, 2), x, y, 2);
             }
         }
-        for (;y<getHeight()+2*pad;y++)
+        #pragma omp parallel for schedule(dynamic)
+        for (int y=getHeight()+pad;y<getHeight()+2*pad;y++)
         {
-            int x=0;
-            for (;x<pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=0;x<pad;x++)
             {
                 result.setData(getData(pad-x-1, getHeight()*2-y+pad-1, 0), x, y, 0);
                 result.setData(getData(pad-x-1, getHeight()*2-y+pad-1, 1), x, y, 1);
                 result.setData(getData(pad-x-1, getHeight()*2-y+pad-1, 2), x, y, 2);
             }
-            for (;x<getWidth()+pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=pad;x<getWidth()+pad;x++)
             {
                 result.setData(getData(x-pad, getHeight()*2-y+pad-1, 0), x, y, 0);
                 result.setData(getData(x-pad, getHeight()*2-y+pad-1, 1), x, y, 1);
                 result.setData(getData(x-pad, getHeight()*2-y+pad-1, 2), x, y, 2);
             }
-            for (;x<getWidth()+2*pad;x++)
+            #pragma omp parallel for schedule(dynamic)
+            for (int x=getWidth()+pad;x<getWidth()+2*pad;x++)
             {
                 result.setData(getData(getWidth()*2-x+pad-1, getHeight()*2-y+pad-1, 0), x, y, 0);
                 result.setData(getData(getWidth()*2-x+pad-1, getHeight()*2-y+pad-1, 0), x, y, 1);
@@ -182,7 +204,9 @@ Buffer Buffer::padding(Padding_Type paddingType, int pad) const
 
 void Buffer::toImage(string path)
 {
+    Timer timer("toImage");
     unsigned char* finalImage = new unsigned char[width * height * 3];
+    #pragma omp parallel for collapse(2) schedule(dynamic)
     for (int y=0; y<height; y++)
     {
         for (int x=0; x<width; x++)
