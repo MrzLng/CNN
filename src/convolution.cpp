@@ -2,58 +2,33 @@
 #include <cmath>
 #include <omp.h>
 
-#include "convolution.h"
+#include "convolutionLayer.h"
 #include "timer.h"
 
-Convolution::Convolution() {};
-
-Buffer Convolution::detectEdges(const Buffer& buffer)
+Buffer ConvolutionLayer::forward(const Buffer& input, Buffer& output)
 {
-    Timer timer("detectEdge");
-    Buffer result(buffer.getWidth()-2, buffer.getHeight()-2, buffer.getChannels());
+    Timer timer("kernelApply");
+    Buffer result(input.getWidth()-kernel.getWidth()/2, input.getHeight()-kernel.getHeight()/2, input.getChannels());
     #pragma omp parallel for collapse(2) schedule(dynamic)
     for (int y=0;y<result.getHeight();y++)
     {
         for (int x=0;x<result.getWidth();x++)
         {
-            float rVertical = 
-            buffer.getData(x,y  ,0)*(-1) + buffer.getData(x+2,y  ,0)*1 +
-            buffer.getData(x,y+1,0)*(-2) + buffer.getData(x+2,y+1,0)*2 + 
-            buffer.getData(x,y+2,0)*(-1) + buffer.getData(x+2,y+2,0)*1 ;
-
-            float rHorizontal = 
-            buffer.getData(x,y  ,0)*(-1) + buffer.getData(x+1,y  ,0)*(-2) + buffer.getData(x+2,y,  0)*(-1) +
-            buffer.getData(x,y+2,0)*1    + buffer.getData(x+1,y+2,0)*2    + buffer.getData(x+2,y+2,0)*1    ;
-
-            float rMagnitude = sqrt(pow(rVertical,2) + pow(rHorizontal, 2));
-
-            result.setData(ReLU(rMagnitude), x, y, 0);
-
-            float gVertical = 
-            buffer.getData(x,y  ,1)*(-1) + buffer.getData(x+2,y  ,1)*1 +
-            buffer.getData(x,y+1,1)*(-2) + buffer.getData(x+2,y+1,1)*2 + 
-            buffer.getData(x,y+2,1)*(-1) + buffer.getData(x+2,y+2,1)*1 ;
-
-            float gHorizontal = 
-            buffer.getData(x,y  ,1)*(-1) + buffer.getData(x+1,y  ,1)*(-2) + buffer.getData(x+2,y,  1)*(-1) +
-            buffer.getData(x,y+2,1)*1    + buffer.getData(x+1,y+2,1)*2    + buffer.getData(x+2,y+2,1)*1    ;
-
-            float gMagnitude = sqrt(pow(gVertical,2) + pow(gHorizontal, 2));
-
-            result.setData(ReLU(gMagnitude), x, y, 1);
-
-            float bVertical = 
-            buffer.getData(x,y  ,2)*(-1) + buffer.getData(x+2,y  ,2)*1 +
-            buffer.getData(x,y+1,2)*(-2) + buffer.getData(x+2,y+1,2)*2 + 
-            buffer.getData(x,y+2,2)*(-1) + buffer.getData(x+2,y+2,2)*1 ;
-
-            float bHorizontal = 
-            buffer.getData(x,y  ,2)*(-1) + buffer.getData(x+1,y  ,2)*(-2) + buffer.getData(x+2,y,  2)*(-1) +
-            buffer.getData(x,y+2,2)*1    + buffer.getData(x+1,y+2,2)*2    + buffer.getData(x+2,y+2,2)*1    ;
-
-            float bMagnitude = sqrt(pow(bVertical,2) + pow(bHorizontal, 2));
-
-            result.setData(ReLU(bMagnitude), x, y, 2);
+            float sumR=0.0f;
+            float sumG=0.0f;
+            float sumB=0.0f;
+            for (int kernelY=0;kernelY<kernel.getHeight();kernelY++)
+            {
+                for (int kernelX=0;kernelX<kernel.getWidth();kernelX++)
+                {
+                    sumR += kernel.getData(kernelX, kernelY, 0) * input.getData(x+kernelX, y+kernelY, 0);
+                    sumG += kernel.getData(kernelX, kernelY, 1) * input.getData(x+kernelX, y+kernelY, 1);
+                    sumB += kernel.getData(kernelX, kernelY, 2) * input.getData(x+kernelX, y+kernelY, 2);
+                }
+            }
+            output.setData(ReLU(sumR), x, y, 0);
+            output.setData(ReLU(sumG), x, y, 1);
+            output.setData(ReLU(sumB), x, y, 2);
         }
     }
 
