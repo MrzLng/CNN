@@ -2,13 +2,14 @@
 
 #include <omp.h>
 #include <iostream>
+#include <vector>
 
 Kernel vertical({-1.0f,0.0f,1.0f,-2.0f,0.0f,2.0f,-1.0f,0.0f,1.0f}, 3, 3, 0);
 Kernel horizontal({-1.0f,-2.0f,-1.0f,0.0f,0.0f,0.0f,1.0f,2.0f,1.0f}, 3, 3, 0);
 
-float fun(float x, float y)
+float larger(float a, float b)
 {
-    return max(x,y);
+    return a>b?a:b;
 }
 
 int main()
@@ -16,14 +17,24 @@ int main()
     Timer timer("main");
     Image image("resources\\MJ_tiles_circles_bamboo_480x480.png");
     Buffer buffer(image);
-    Buffer pad = buffer.padding(Buffer::Padding_Type::EXTEND_EDGE, 1);
-    Buffer nb(buffer.getWidth(), buffer.getHeight(), buffer.getChannels());
-    ConvolutionLayer c(horizontal);
-    c.forward(pad,nb);
-    nb.toImage("outputs\\new.png");
-    Buffer ds(buffer.getWidth(), buffer.getHeight(), buffer.getChannels());
-    PoolingLayer pool(fun, 10, 10);
-    pool.forward(nb,ds);
-    ds.toImage("outputs\\idk.png");
-    return 0;
+
+    horizontal.write("bin/horizontal.bin");
+    vertical.write("bin/vertical.bin");
+
+    Kernel vertical("bin/vertical.bin");
+    Kernel horizontal("bin/horizontal.bin");
+
+    //KernelBank kBank("bin/kBank.bin");
+    KernelBank kBank(3, 3, 3, 16);
+
+    std::vector<std::unique_ptr<Layer>> layers;
+    layers.push_back(std::make_unique<PaddingLayer>(PaddingLayer::Padding_Type::ZERO_PADDING, 1));
+    layers.push_back(std::make_unique<ConvolutionLayer>(kBank));
+    layers.push_back(std::make_unique<PoolingLayer>(larger, 2, 2));
+    layers.push_back(std::make_unique<ReluLayer>());
+
+    LayerMaster master(buffer, std::move(layers));
+    master.start();
+
+    kBank.write("bin/kBank.bin");
 }

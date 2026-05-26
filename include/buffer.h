@@ -14,15 +14,10 @@ class Buffer
         RED=0, GREEN=1, BLUE=2
     };
 
-    enum class Padding_Type
-    {
-        EXTEND_EDGE,
-        ZERO_PADDING,
-        REFLECTION,
-    };
-
     public:
     Buffer(int width, int height, int channels);
+    Buffer(vector<float> data, int width, int height, int channels);
+    Buffer(int value, int width, int height, int channels);
     Buffer(const Image& image);
 
     inline void setData(float value, int index) {
@@ -57,9 +52,10 @@ class Buffer
     inline int getSize() const {return size;}
     inline float* getVector() {return data.data();}
 
-    Buffer padding(Padding_Type paddingType, int pad) const;
-
     void toImage(string path);
+    void resize(int width, int height, int channels);
+
+    void print();
 
     private:
     vector<float> data;

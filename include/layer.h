@@ -7,5 +7,6 @@ class Layer
     public:
     virtual ~Layer() = default;
 
-    virtual Buffer forward(const Buffer& input, Buffer& output)=0;
+    virtual void forward(const Buffer& input, Buffer& output) = 0;
+    virtual void forward(const Buffer* input, Buffer* output) = 0;
 };
