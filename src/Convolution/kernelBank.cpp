@@ -1,4 +1,5 @@
 #include "kernelBank.h"
+#include "timer.h"
 
 #include <random>
 #include <cmath>
@@ -8,6 +9,7 @@
 KernelBank::KernelBank(int width, int height, int channels, int count)
     : width(width), height(height), channels(channels), count(count)
 {
+    Timer timer("KernelBank");
     std::vector<float> data(width*height*(this->channels != 0 ? this->channels : 1));
     std::random_device seed;
     std::mt19937 gen(seed());
@@ -26,6 +28,7 @@ KernelBank::KernelBank(int width, int height, int channels, int count)
 KernelBank::KernelBank(string path)
     : count(0)
 {
+    Timer timer("KernelBank");
     std::ifstream file(path, std::ios::binary);
 
     if (!file.is_open())
@@ -48,6 +51,7 @@ KernelBank::KernelBank(string path)
 
 void KernelBank::write(string path)
 {
+    Timer timer("KernelBankWrite");
     std::ofstream file(path, std::ios::binary);
 
     if (!file)
@@ -62,7 +66,7 @@ void KernelBank::write(string path)
     file.write(reinterpret_cast<char *>(&this->count), sizeof(int));
     for (int i = 0; i < count; i++)
     {
-        file.write(reinterpret_cast<char *>(kernels[i].getVector()), sizeof(float) * this->width * this->height * (this->channels != 0 ? this->channels : 1));
+        file.write(reinterpret_cast<char *>(kernels[i].getVectorPtr()), sizeof(float) * this->width * this->height * (this->channels != 0 ? this->channels : 1));
     }
 }
 

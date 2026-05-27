@@ -1,6 +1,6 @@
 # Variables
 CXX = g++
-CXXFLAGS = -std=c++17 -I./include -I./external/stb -fopenmp -O3
+CXXFLAGS = -std=c++17 -I./include -I./include/Convolution -I./include/NeuralNetwork -I./external/stb -fopenmp -O3
 TARGET = bin/cnn_app.exe
 SRCS = $(wildcard src/*.cpp)
 

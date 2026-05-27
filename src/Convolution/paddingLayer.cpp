@@ -13,7 +13,7 @@ void PaddingLayer::forward(const Buffer &input, Buffer &output)
     switch (paddingType)
     {
     case Padding_Type::ZERO_PADDING:
-        fill(output.getVector(), output.getVector() + output.getSize(), 0);
+        fill(output.getVectorPtr(), output.getVectorPtr() + output.getSize(), 0);
 #pragma omp parallel for collapse(3) schedule(dynamic)
         for (int c = 0; c < input.getChannels(); c++)
         {
@@ -163,7 +163,7 @@ void PaddingLayer::forward(const Buffer *input, Buffer *output)
     switch (paddingType)
     {
     case Padding_Type::ZERO_PADDING:
-        fill(output->getVector(), output->getVector() + output->getSize(), 0);
+        fill(output->getVectorPtr(), output->getVectorPtr() + output->getSize(), 0);
 #pragma omp parallel for collapse(3) schedule(dynamic)
         for (int c = 0; c < input->getChannels(); c++)
         {

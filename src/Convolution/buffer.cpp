@@ -11,6 +11,7 @@
 
 Buffer::Buffer(int width, int height, int channels) : width(width), height(height), channels(channels), data(width * height * channels), size(width * height * channels) 
 {
+    Timer timer("Buffer");
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dis(0.0f, 1.0f);
@@ -24,6 +25,7 @@ Buffer::Buffer(int value, int width, int height, int channels) : width(width), h
 
 Buffer::Buffer(const Image &image) : width(image.getWidth()), height(image.getHeight()), channels(3), data(image.getWidth() * image.getHeight() * 3), size(image.getWidth() * image.getHeight() * 3)
 {
+    Timer timer("Buffer");
 #pragma omp parallel for collapse(2) schedule(dynamic)
     for (int y = 0; y < height; y++)
     {

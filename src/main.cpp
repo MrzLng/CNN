@@ -25,7 +25,7 @@ int main()
     layers.push_back(std::make_unique<PaddingLayer>(PaddingLayer::Padding_Type::ZERO_PADDING, 1));
     layers.push_back(std::make_unique<ConvolutionLayer>(kBank));
     layers.push_back(std::make_unique<PoolingLayer>(larger, 2, 2));
-    // layers.push_back(std::make_unique<ReluLayer>());
+    layers.push_back(std::make_unique<ReluLayer>());
 
     LayerMaster master(buffer, std::move(layers));
     master.start();

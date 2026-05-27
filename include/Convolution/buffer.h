@@ -50,7 +50,8 @@ class Buffer
     inline int getHeight() const {return height;}
     inline int getChannels() const {return channels;}
     inline int getSize() const {return size;}
-    inline float* getVector() {return data.data();}
+    inline vector<float> getVector() {return data;}
+    inline float* getVectorPtr() {return data.data();}
 
     void toImage(string folderPath);
     void resize(int width, int height, int channels);

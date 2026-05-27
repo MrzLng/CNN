@@ -1,4 +1,5 @@
 #include "image.h"
+#include "timer.h"
 
 #include <iostream>
 
@@ -7,6 +8,7 @@
 
 Image::Image(string path):path(path)
 {
+    Timer timer("Image");
     data = stbi_load(path.c_str(), &width, &height, &channels, 3);
     if (!data)
     {

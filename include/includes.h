@@ -1,18 +1,20 @@
 #pragma once
 
-#include "image.h"
-#include "buffer.h"
-
-#include "layer.h"
-#include "layerMaster.h"
-
-#include "kernel.h"
-
 #include "timer.h"
 
-#include "convolutionLayer.h"
-#include "poolingLayer.h"
-#include "paddingLayer.h"
-#include "reluLayer.h"
+#include "Convolution/image.h"
+#include "Convolution/buffer.h"
 
-#include "functions.h"
+#include "Convolution/layer.h"
+#include "Convolution/layerMaster.h"
+
+#include "Convolution/kernel.h"
+#include "Convolution/kernelBank.h"
+
+#include "Convolution/convolutionLayer.h"
+#include "Convolution/poolingLayer.h"
+#include "Convolution/paddingLayer.h"
+#include "Convolution/reluLayer.h"
+
+#include "Convolution/functions.h"
+

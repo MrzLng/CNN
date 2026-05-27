@@ -14,7 +14,8 @@ class Kernel
     inline int getWidth() const {return width;}
     inline int getHeight() const {return height;}
     inline int getChannels() const {return channels;}
-    inline auto getVector() {return data.data();}
+    inline vector<float> getVector() {return data;}
+    inline float* getVectorPtr() {return data.data();}
 
     void write(string path);
 
