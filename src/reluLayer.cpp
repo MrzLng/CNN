@@ -4,34 +4,36 @@
 #include "buffer.h"
 #include "timer.h"
 
-void ReluLayer::forward(const Buffer& input, Buffer& output)
+void ReluLayer::forward(const Buffer &input, Buffer &output)
 {
     Timer timer("Relu");
     output.resize(input.getWidth(), input.getHeight(), input.getChannels());
-    #pragma omp parallel for collapse(2) schedule(dynamic)
-    for (int y=0;y<input.getHeight();y++)
+#pragma omp parallel for collapse(2) schedule(dynamic)
+    for (int c = 0; c < input.getChannels(); c++)
     {
-        for (int x=0;x<input.getWidth();x++)
+        for (int y = 0; y < input.getHeight(); y++)
         {
-            output.setData(max(input.getData(x,y,0),0.0f),x,y,0);
-            output.setData(max(input.getData(x,y,1),0.0f),x,y,1);
-            output.setData(max(input.getData(x,y,2),0.0f),x,y,2);
+            for (int x = 0; x < input.getWidth(); x++)
+            {
+                output.setData(max(input.getData(x, y, c), 0.0f), x, y, c);
+            }
         }
     }
 }
 
-void ReluLayer::forward(const Buffer* input, Buffer* output)
+void ReluLayer::forward(const Buffer *input, Buffer *output)
 {
     Timer timer("Relu");
     output->resize(input->getWidth(), input->getHeight(), input->getChannels());
-    #pragma omp parallel for collapse(2) schedule(dynamic)
-    for (int y=0;y<input->getHeight();y++)
+#pragma omp parallel for collapse(2) schedule(dynamic)
+    for (int c = 0; c < input->getChannels(); c++)
     {
-        for (int x=0;x<input->getWidth();x++)
+        for (int y = 0; y < input->getHeight(); y++)
         {
-            output->setData(max(input->getData(x,y,0),0.0f),x,y,0);
-            output->setData(max(input->getData(x,y,1),0.0f),x,y,1);
-            output->setData(max(input->getData(x,y,2),0.0f),x,y,2);
+            for (int x = 0; x < input->getWidth(); x++)
+            {
+                output->setData(max(input->getData(x, y, c), 0.0f), x, y, c);
+            }
         }
     }
 }

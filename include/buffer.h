@@ -52,7 +52,7 @@ class Buffer
     inline int getSize() const {return size;}
     inline float* getVector() {return data.data();}
 
-    void toImage(string path);
+    void toImage(string folderPath);
     void resize(int width, int height, int channels);
 
     void print();
