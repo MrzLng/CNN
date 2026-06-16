@@ -5,6 +5,8 @@
 #include <fstream>
 #include <string>
 #include <omp.h>
+#include <random>
+
 using namespace std;
 
 Matrix::Matrix(vector<float> data, int rows, int columns)
@@ -21,6 +23,31 @@ Matrix::Matrix(float value, int rows, int columns)
 
 Matrix::Matrix(int rows, int columns)
     : data(rows * columns), rows(rows), columns(columns) {}
+
+Matrix::Matrix(int type, float arg1, float arg2, int rows, int columns)
+    : data(rows * columns), rows(rows), columns(columns)
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    switch (type)
+    {
+    case RandomType::normal:
+        std::normal_distribution distr(arg1, arg2);
+        for (int i = 0; i < rows * columns; i++)
+        {
+            data[i] = distr(gen);
+        }
+        break;
+    case RandomType::standard:
+        std::uniform_real_distribution distr(arg1, arg2);
+
+        for (int i = 0; i < rows * columns; i++)
+        {
+            data[i] = distr(gen);
+        }
+        break;
+    }
+}
 
 Matrix::Matrix(string path)
 {
@@ -39,6 +66,8 @@ Matrix::Matrix(string path)
     {
         cerr << "matrix dimensions does not match data" << endl;
     }
+
+    file.close();
 }
 
 void Matrix::write(string path)
@@ -53,6 +82,8 @@ void Matrix::write(string path)
     file.write(reinterpret_cast<char *>(&this->rows), sizeof(int));
     file.write(reinterpret_cast<char *>(&this->columns), sizeof(int));
     file.write(reinterpret_cast<char *>(this->data.data()), sizeof(float) * this->rows * this->columns);
+
+    file.close();
 }
 
 void Matrix::resize(int rows, int columns)
