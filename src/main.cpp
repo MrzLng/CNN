@@ -15,7 +15,7 @@ float larger(float a, float b)
 int main()
 {
     Timer timer("main");
-    Image image("resources/MJ_tiles_circles_bamboo_480x480.png");
+    Image image("resources/gaston-abascal-8F-6pXyQyLU-unsplash.jpg");
     Buffer buffer(image, 960, 540, 3);
 
     buffer.toImage("outputs/test");
