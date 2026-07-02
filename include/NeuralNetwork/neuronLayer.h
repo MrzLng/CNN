@@ -11,7 +11,7 @@ class NeuronLayer
 
     inline int getNueronCount() const {return neuronCount;}
     inline Matrix getMatrix() const {return matrix;}
-    inline Matrix setMatrix(Matrix other) {matrix = other;}
+    inline void setMatrix(Matrix other) {matrix = other;}
 
     private:
     Matrix matrix;

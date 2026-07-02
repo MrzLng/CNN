@@ -16,10 +16,12 @@ int main()
 {
     Timer timer("main");
     Image image("resources/MJ_tiles_circles_bamboo_480x480.png");
-    Buffer buffer(image);
+    Buffer buffer(image, 960, 540, 3);
 
-    // KernelBank kBank("bin/kBank.bin");
-    KernelBank kBank(3, 3, 3, 16);
+    buffer.toImage("outputs/test");
+
+    KernelBank kBank("bin/kBank.bin");
+    // KernelBank kBank(3, 3, 3, 16);
 
     std::vector<std::unique_ptr<Layer>> layers;
     layers.push_back(std::make_unique<PaddingLayer>(PaddingLayer::Padding_Type::ZERO_PADDING, 1));
@@ -27,9 +29,9 @@ int main()
     layers.push_back(std::make_unique<PoolingLayer>(larger, 2, 2));
     layers.push_back(std::make_unique<ReluLayer>());
 
-    LayerMaster master(buffer, std::move(layers));
-    master.start();
+    ConvolutionLayerMaster convolutionMaster(buffer, std::move(layers));
+    convolutionMaster.start();
 
     kBank.write("bin/kBank.bin");
-    master.getBufferPtr()->toImage("outputs");
+    convolutionMaster.getBufferPtr()->toImage("outputs");
 }

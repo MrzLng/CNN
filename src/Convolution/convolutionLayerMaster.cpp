@@ -1,19 +1,19 @@
-#include "layerMaster.h"
+#include "convolutionLayerMaster.h"
 
-LayerMaster::LayerMaster(Buffer initialBuffer, std::vector<std::unique_ptr<Layer>> layers)
+ConvolutionLayerMaster::ConvolutionLayerMaster(Buffer initialBuffer, std::vector<std::unique_ptr<Layer>> layers)
 :layers(std::move(layers)) 
 {
     mainBuffer = new Buffer(initialBuffer);
     tempBuffer = new Buffer(initialBuffer);
 }
 
-LayerMaster::~LayerMaster()
+ConvolutionLayerMaster::~ConvolutionLayerMaster()
 {
     delete mainBuffer;
     delete tempBuffer;
 }
 
-void LayerMaster::start()
+void ConvolutionLayerMaster::start()
 {
     Buffer* temp;
     for (int i=0; i<layers.size(); i++)

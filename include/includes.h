@@ -6,7 +6,7 @@
 #include "Convolution/buffer.h"
 
 #include "Convolution/layer.h"
-#include "Convolution/layerMaster.h"
+#include "Convolution/convolutionLayerMaster.h"
 
 #include "Convolution/kernel.h"
 #include "Convolution/kernelBank.h"
@@ -17,4 +17,3 @@
 #include "Convolution/reluLayer.h"
 
 #include "Convolution/functions.h"
-

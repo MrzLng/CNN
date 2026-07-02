@@ -25,7 +25,7 @@ class Matrix
     inline int getColumns() const {return columns;}
     inline float getData(int row, int column) const {return data[row*columns+column];}
     inline float& getData(int row, int column) {return data[row*columns+column];}
-    inline float* getVectorPtr() {data.data();}
+    inline float* getVectorPtr() {return data.data();}
 
     void write(string path);
 
@@ -37,6 +37,8 @@ class Matrix
     Matrix operator+(const Matrix& other) const;
     Matrix operator-(const Matrix& other) const;
     Matrix operator*(const Matrix& other) const;
+
+    Matrix& operator=(const Matrix &other);
 
     Matrix& operator+=(const Matrix& other);
     Matrix& operator-=(const Matrix& other);

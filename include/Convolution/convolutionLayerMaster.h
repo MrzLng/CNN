@@ -6,11 +6,11 @@
 #include "layer.h"
 #include "buffer.h"
 
-class LayerMaster
+class ConvolutionLayerMaster
 {
     public:
-    LayerMaster(Buffer initialBuffer, std::vector<std::unique_ptr<Layer>> layers);
-    ~LayerMaster();
+    ConvolutionLayerMaster(Buffer initialBuffer, std::vector<std::unique_ptr<Layer>> layers);
+    ~ConvolutionLayerMaster();
 
     inline Buffer* getBufferPtr() {return mainBuffer;}
 

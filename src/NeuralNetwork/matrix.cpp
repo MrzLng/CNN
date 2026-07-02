@@ -32,20 +32,23 @@ Matrix::Matrix(int type, float arg1, float arg2, int rows, int columns)
     switch (type)
     {
     case RandomType::normal:
-        std::normal_distribution distr(arg1, arg2);
+    {
+        std::normal_distribution<float> ndistr(arg1, arg2);
         for (int i = 0; i < rows * columns; i++)
         {
-            data[i] = distr(gen);
+            data[i] = ndistr(gen);
         }
         break;
+    }
     case RandomType::standard:
-        std::uniform_real_distribution distr(arg1, arg2);
-
+    {
+        std::uniform_real_distribution<float> urdistr(arg1, arg2);
         for (int i = 0; i < rows * columns; i++)
         {
-            data[i] = distr(gen);
+            data[i] = urdistr(gen);
         }
         break;
+    }
     }
 }
 
@@ -98,7 +101,7 @@ Matrix Matrix::operator+(const Matrix &other) const
     if (other.getColumns() != columns || other.getRows() != rows)
     {
         cerr << "matrix dimensions doesn't allow addition" << endl;
-        return;
+        return *this;
     }
     Matrix result(rows, columns);
 #pragma omp parallel for collapse(2) schedule(dynamic)
@@ -117,7 +120,7 @@ Matrix Matrix::operator-(const Matrix &other) const
     if (other.getColumns() != columns || other.getRows() != rows)
     {
         cerr << "matrix dimensions doesn't allow subtraction" << endl;
-        return;
+        return *this;
     }
     Matrix result(rows, columns);
 #pragma omp parallel for collapse(2) schedule(dynamic)
@@ -136,7 +139,7 @@ Matrix Matrix::operator*(const Matrix &other) const
     if (other.getRows() != columns)
     {
         cerr << "matrix dimensions doesn't allow multiplication" << endl;
-        return;
+        return *this;
     }
     Matrix result(rows, other.getColumns());
 #pragma omp parallel for collapse(2) schedule(dynamic)
@@ -167,7 +170,7 @@ Matrix &Matrix::operator+=(const Matrix &other)
     if (other.getColumns() != columns || other.getRows() != rows)
     {
         cerr << "matrix dimensions doesn't allow addition" << endl;
-        return;
+        return *this;
     }
 #pragma omp parallel for collapse(2) schedule(dynamic)
     for (int r = 0; r < rows; r++)
@@ -185,7 +188,7 @@ Matrix &Matrix::operator-=(const Matrix &other)
     if (other.getColumns() != columns || other.getRows() != rows)
     {
         cerr << "matrix dimensions doesn't allow subtraction" << endl;
-        return;
+        return *this;
     }
 #pragma omp parallel for collapse(2) schedule(dynamic)
     for (int r = 0; r < rows; r++)
@@ -203,7 +206,7 @@ Matrix &Matrix::operator*=(const Matrix &other)
     if (other.getRows() != columns)
     {
         cerr << "matrix dimensions doesn't allow multiplication" << endl;
-        return;
+        return *this;
     }
     Matrix result(rows, other.getColumns());
 #pragma omp parallel for collapse(2) schedule(dynamic)

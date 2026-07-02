@@ -20,6 +20,8 @@ class Buffer
     Buffer(int value, int width, int height, int channels);
     Buffer(const Image& image);
 
+    Buffer(const Image& image, int width, int height, int channels);
+
     inline void setData(float value, int index) {
         #ifdef DEBUG
         if (index >= width*height or index<0) {cerr << "[Buffer Indexing Error]: Index out of range";}
