@@ -28,7 +28,7 @@ class Matrix
     inline float* getVectorPtr() {return data.data();}
 
     void write(string path);
-
+    void map(float (*function)(float));
     void resize(int rows, int columns);
 
     inline float* operator[](int row) {return &data[row*columns];}

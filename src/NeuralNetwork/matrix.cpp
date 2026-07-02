@@ -6,6 +6,7 @@
 #include <string>
 #include <omp.h>
 #include <random>
+#include <algorithm>
 
 using namespace std;
 
@@ -87,6 +88,11 @@ void Matrix::write(string path)
     file.write(reinterpret_cast<char *>(this->data.data()), sizeof(float) * this->rows * this->columns);
 
     file.close();
+}
+
+void Matrix::map(float (*function)(float))
+{
+    transform(data.begin(), data.end(), data.begin(), function);
 }
 
 void Matrix::resize(int rows, int columns)
