@@ -29,7 +29,8 @@ int main()
     layers.push_back(std::make_unique<PoolingLayer>(larger, 2, 2));
     layers.push_back(std::make_unique<ReluLayer>());
 
-    ConvolutionLayerMaster convolutionMaster(buffer, std::move(layers));
+    ConvolutionLayerMaster convolutionMaster(std::move(layers));
+    convolutionMaster.initializeBuffer(buffer);
     convolutionMaster.start();
 
     kBank.write("bin/kBank.bin");

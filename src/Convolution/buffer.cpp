@@ -44,10 +44,10 @@ Buffer::Buffer(const Image &image, int width, int height, int channels)
 {
     float scaling_factor = min(min(static_cast<float>(width) / static_cast<float>(image.getWidth()), static_cast<float>(height) / static_cast<float>(image.getHeight())), 1.0f);
     // factor <= 1
-    std::cout<<static_cast<float>(width)<<endl;
-    std::cout<<static_cast<float>(image.getWidth())<<endl;
-    std::cout<<static_cast<float>(width) / static_cast<float>(image.getWidth())<<endl;
-    std::cout<<scaling_factor<<endl;
+    std::cout << static_cast<float>(width) << endl;
+    std::cout << static_cast<float>(image.getWidth()) << endl;
+    std::cout << static_cast<float>(width) / static_cast<float>(image.getWidth()) << endl;
+    std::cout << scaling_factor << endl;
     for (int c = 0; c < channels; c++)
     {
         for (int y = 0; y < height; y++)
@@ -62,9 +62,11 @@ Buffer::Buffer(const Image &image, int width, int height, int channels)
                 float Yweights = realYOnImage - roundDownY;
 
                 data[c * height * width + y * width + x] = clamp((static_cast<float>(image.getData(roundDownX, roundDownY, c)) * (1 - Xweights) * (1 - Yweights) +
-                                                           static_cast<float>(image.getData(roundDownX + 1, roundDownY, c)) * (Xweights) * (1 - Yweights) +
-                                                           static_cast<float>(image.getData(roundDownX, roundDownY + 1, c)) * (1 - Xweights) * (Yweights) +
-                                                           static_cast<float>(image.getData(roundDownX + 1, roundDownY + 1, c)) * (Xweights) * (Yweights))/255.0f, 0.0f, 1.0f);
+                                                                  static_cast<float>(image.getData(roundDownX + 1, roundDownY, c)) * (Xweights) * (1 - Yweights) +
+                                                                  static_cast<float>(image.getData(roundDownX, roundDownY + 1, c)) * (1 - Xweights) * (Yweights) +
+                                                                  static_cast<float>(image.getData(roundDownX + 1, roundDownY + 1, c)) * (Xweights) * (Yweights)) /
+                                                                     255.0f,
+                                                                 0.0f, 1.0f);
             }
         }
     }
@@ -100,6 +102,22 @@ void Buffer::resize(int width, int height, int channels)
     {
         data.resize(this->size);
     }
+}
+
+Buffer Buffer::slice(int leftX, int upY, int sliceWidth, int sliceHeight)
+{
+    Buffer result(sliceWidth, sliceHeight, channels);
+    for (int c = 0; c < channels; c++)
+    {
+        for (int y = 0; y < sliceHeight; y++)
+        {
+            for (int x = 0; x < sliceWidth; x++)
+            {
+                result.setData(getData(leftX + x, upY + y, c), x, y, c);
+            }
+        }
+    }
+    return result;
 }
 
 void Buffer::print()

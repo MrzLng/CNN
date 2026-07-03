@@ -14,7 +14,7 @@ class NeuronLayer
     inline int getNueronCount() const {return neuronCount;}
     inline Matrix getMatrix() const {return matrix;}
     inline void setMatrix(Matrix other) {matrix = other;}
-    inline void map(std::function<float(float)> function) {matrix.map(function);}
+    inline void map(float (*function)(float)) {matrix.map(function);}
 
     private:
     Matrix matrix;

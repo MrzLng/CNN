@@ -9,11 +9,12 @@
 class ConvolutionLayerMaster
 {
     public:
-    ConvolutionLayerMaster(Buffer initialBuffer, std::vector<std::unique_ptr<Layer>> layers);
+    ConvolutionLayerMaster(std::vector<std::unique_ptr<Layer>> layers);
     ~ConvolutionLayerMaster();
 
     inline Buffer* getBufferPtr() {return mainBuffer;}
 
+    void initializeBuffer(Buffer initialBuffer);
     void start();
 
     private:

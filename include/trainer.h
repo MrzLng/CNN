@@ -7,17 +7,18 @@
 
 using namespace std;
 
-class NeuralTrainer
+class Trainer
 {
 public:
-NeuralTrainer(ConvolutionLayerMaster convolutionLayerMaster, NeuralLayerMaster neuralLayerMaster, string folderPath);
-NeuralTrainer(string layerWeightsPath,string folderPath);
-~NeuralTrainer();
+Trainer(ConvolutionLayerMaster convolutionLayerMaster, NeuralLayerMaster neuralLayerMaster);
+Trainer(string layerWeightsPath);
+~Trainer();
 
-void storeWeights();
+void train(string folderPath, int epochs);
+void validate(string folderPath);
+void storeWeights(string layerWeightsPath);
 
 private:
 ConvolutionLayerMaster convolutionLayerMaster;
 NeuralLayerMaster neuralLayerMaster;
-string folderPath;
 };

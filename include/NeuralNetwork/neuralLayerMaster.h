@@ -9,9 +9,10 @@
 class NeuralLayerMaster
 {
 public:
-    NeuralLayerMaster(NeuronLayer initialNeuronLayer, std::vector<TransformationLayer> transformationLayers);
+    NeuralLayerMaster(std::vector<TransformationLayer> transformationLayers);
     ~NeuralLayerMaster();
 
+    void initializeNeuronLayer(NeuronLayer initialNeuronLayer);
     void start();
     NeuronLayer getResult();
 
